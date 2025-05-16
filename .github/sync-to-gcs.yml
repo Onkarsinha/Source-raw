@@ -1,23 +1,31 @@
-name: Sync to Google Cloud Storage
+name: GCS Deployment
 
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the main branch
 on:
   push:
-    branches:
-      - main  # Adjust to your default branch (e.g., master)
+    branches: [ main ]
 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  # This workflow contains a single job called "deploy"
   deploy:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
 
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          project_id: gcp-etl-458908  # Replace with your GCP project ID
+    # Setup gcloud CLI
+    - uses: google-github-actions/setup-gcloud@v0
+      with:
+        service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        project_id: gcp-migration-460012
 
-      - name: Sync to GCS
-        run: |
-          gsutil -m rsync -r ./ gs://etl-testing-data/  # Replace with your bucket name
+    - name: Deploy via GCS
+      run: |
+        gsutil -m rm -rf gs://github-gcp/* || echo "$?"
+        gsutil -m cp -r * gs://github-gcp/

@@ -1,2 +1,2 @@
 select *
-from script
+from abcd

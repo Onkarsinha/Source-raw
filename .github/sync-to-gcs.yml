@@ -1,0 +1,23 @@
+name: Sync to Google Cloud Storage
+
+on:
+  push:
+    branches:
+      - main  # Adjust to your default branch (e.g., master)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: YOUR_PROJECT_ID  # Replace with your GCP project ID
+
+      - name: Sync to GCS
+        run: |
+          gsutil -m rsync -r ./ gs://YOUR_BUCKET_NAME/  # Replace with your bucket name

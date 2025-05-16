@@ -27,4 +27,4 @@ jobs:
 
     - name: Deploy via GCS
       run: |
-        gsutil -m rsync -r ./ gs://github-gcp/*
+        gsutil -m cp -r * gs://github-gcp/
